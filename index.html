@@ -212,7 +212,7 @@ body::before {
   box-shadow: 0 4px 16px var(--glow);
 }
 .profile-name { font-size: 18px; font-weight: 700; margin-bottom: 2px; }
-.profile-nip  { font-size: 12px; color: var(--text2); font-family: var(--ffm); }
+.profile-id   { font-size: 12px; color: var(--text2); font-family: var(--ffm); }
 .profile-grid {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(140px,1fr));
   gap: 0;
@@ -426,8 +426,8 @@ tbody tr:hover { background: rgba(255,255,255,.03); }
 <div class="search-panel">
   <div class="search-inner">
     <div class="search-row">
-      <input class="search-input" id="nipInput" type="text"
-        placeholder="Masukkan NIP Anda…"
+      <input class="search-input" id="idInput" type="text"
+        placeholder="Masukkan ID Anda…"
         onkeypress="if(event.key==='Enter')doSearch()">
       <button class="btn-search" id="searchBtn" onclick="doSearch()">🔍 Cari</button>
     </div>
@@ -452,8 +452,8 @@ tbody tr:hover { background: rgba(255,255,255,.03); }
 <div class="main" id="main">
   <div class="state-box fade">
     <div class="state-icon">🔎</div>
-    <h3>Masukkan NIP untuk melihat data</h3>
-    <p>Ketik NIP Anda di kolom pencarian di atas lalu tekan Cari</p>
+    <h3>Masukkan ID untuk melihat data</h3>
+    <p>Ketik ID Anda di kolom pencarian di atas lalu tekan Cari</p>
   </div>
 </div>
 
@@ -482,7 +482,7 @@ const BULAN = {
 };
 
 /* ─── STATE ─────────────────────────────────── */
-let _rows = null, _nip = '', _chip = 'all';
+let _rows = null, _id = '', _chip = 'all';
 
 /* ─── YEAR INIT ─────────────────────────────── */
 (()=>{
@@ -541,11 +541,11 @@ function filtered(){
 
 /* ─── SEARCH ────────────────────────────────── */
 async function doSearch(){
-  const nip = document.getElementById('nipInput').value.trim();
-  if(!nip){ alert('⚠️ Mohon masukkan NIP'); return; }
+  const id = document.getElementById('idInput').value.trim();
+  if(!id){ alert('⚠️ Mohon masukkan ID'); return; }
   const btn = document.getElementById('searchBtn');
   btn.disabled = true;
-  setMain(`<div class="state-box fade"><div class="spinner"></div><h3>Mencari data…</h3><p>NIP: <strong>${nip}</strong></p></div>`);
+  setMain(`<div class="state-box fade"><div class="spinner"></div><h3>Mencari data…</h3><p>ID: <strong>${id}</strong></p></div>`);
   try{
     const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_NAME}!A:J?key=${API_KEY}`);
     const data = await res.json();
@@ -554,12 +554,12 @@ async function doSearch(){
       setMain(`<div class="state-box fade"><div class="state-icon">📭</div><h3>Spreadsheet kosong</h3></div>`);
       return;
     }
-    const rows = data.values.slice(1).filter(r=>r[1]===nip);
+    const rows = data.values.slice(1).filter(r=>r[1]===id);
     if(!rows.length){
-      setMain(`<div class="state-box fade"><div class="state-icon">❌</div><h3>Tidak ada data untuk NIP: ${nip}</h3><p>Periksa kembali NIP yang dimasukkan</p></div>`);
+      setMain(`<div class="state-box fade"><div class="state-icon">❌</div><h3>Tidak ada data untuk ID: ${id}</h3><p>Periksa kembali ID yang dimasukkan</p></div>`);
       return;
     }
-    _rows=rows; _nip=nip; _chip='all';
+    _rows=rows; _id=id; _chip='all';
     render();
   }catch(e){
     setMain(`<div class="err-box fade"><strong>❌ Error:</strong> ${e.message}<br><br>• Periksa koneksi internet Anda<br>• Pastikan API Key & Spreadsheet ID benar<br>• Spreadsheet harus bisa diakses publik</div>`);
@@ -600,7 +600,7 @@ function render(){
       <div class="avatar">${initial}</div>
       <div>
         <div class="profile-name">${nama}</div>
-        <div class="profile-nip">NIP · ${_nip}</div>
+        <div class="profile-id">ID · ${_id}</div>
       </div>
     </div>
     <div class="profile-grid">
